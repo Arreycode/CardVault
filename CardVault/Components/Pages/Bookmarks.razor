@@ -13,3 +13,10 @@
 </head>
 
 <h3>Bookmarks</h3>
+
+<div class="search-container">
+    <input type="text" class="search-field" placeholder="Search" @bind="searchQuery" @bind:event="oninput" />
+    <button type="button" class="search-btn" @onclick="FilterResults">
+        <i class="fas fa-search"></i> Search
+    </button>
+</div>
