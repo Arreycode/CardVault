@@ -1,0 +1,15 @@
+﻿@page "/Bookmarks"
+
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage sessionStorage
+@using Microsoft.EntityFrameworkCore
+@using System.Linq
+@using CardVault.ModelsDTO
+@using CardVault.Services
+
+<head>
+    <title>Bookmarks Page</title>
+    <link rel="stylesheet" href="css/MGT01.css" />
+</head>
+
+<h3>Bookmarks</h3>
