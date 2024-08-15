@@ -65,3 +65,16 @@ private void FilterResults()
             .ToList();
     }
 }
+private async Task ToggleBookmark(long id)
+{
+    if (bookmarkedItems.Contains(id))
+    {
+        bookmarkedItems.Remove(id);
+        bookmarkedCards = bookmarkedCards.Where(card => card.Id != id).ToList();
+    }
+    else
+    {
+        bookmarkedItems.Add(id);
+    }
+    await sessionStorage.SetAsync("bookmarkedItems", bookmarkedItems);
+}
