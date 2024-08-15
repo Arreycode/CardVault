@@ -1,4 +1,15 @@
-﻿<h3>MGT01</h3>
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage sessionStorage
+@inject CardVault.Services.Services services
+@using CardVault.ModelsDTO
+@using System.Linq
+
+<head>
+    <title>CARDS COLLECTION</title>
+    <link rel="stylesheet" href="css/MGT01.css" />
+</head>
+
+<h3>Cards</h3>
 
 <div class="search-container">
     <input type="text" class="search-field" placeholder="Search" @bind="searchQuery" @bind:event="oninput" />
@@ -28,6 +39,13 @@
         <option value="Green">Green</option>
     </select>
 
+
+
+
+
+
+
+
     <select @bind="FilterParameters.ManaCostFilter">
         <option value="">Mana Cost</option>
         @for (int i = 0; i <= 16; i++)
@@ -36,6 +54,12 @@
         }
         <option value="1000000">1000000</option>
     </select>
+
+
+
+
+
+
 
     <select @bind="FilterParameters.TypeFilter">
         <option value="">Type</option>
@@ -76,9 +100,44 @@
     </button>
 </div>
 
+<ul class="image-list">
+    @if (pagedCards != null && pagedCards.Any())
+    {
+        @foreach (var card in pagedCards)
+        {
+            <li>
+                <span class="card-title">
+                    <a href="/redcarddetail/@card.Id">@card.Name</a> <br />
+                    <button class="bookmark-btn" @onclick="() => ToggleBookmark(card.Id)">
+                        <i class="@GetBookmarkIconClass(card.Id)"></i>
+                    </button>
+                </span>
+                <!-- Load images without lazy loading -->
+                <img width="50" src="@(!string.IsNullOrEmpty(card.OriginalImageUrl) ? card.OriginalImageUrl : "images/placeholder.png")" alt="@card.Name" />
+            </li>
+        }
+    }
+    else
+    {
+        <li>No cards found</li>
+    }
+</ul>
 
+@if (totalPages > 1)
+{
+    <div class="pagination">
+        <button @onclick="() => OnPageChanged(currentPage - 1)" disabled="@IsPreviousDisabled">Previous</button>
 
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <button @onclick="() => OnPageChanged(i)" class="@(currentPage == i ? "active" : "")">
+                @i
+            </button>
+        }
 
+        <button @onclick="() => OnPageChanged(currentPage + 1)" disabled="@IsNextDisabled">Next</button>
+    </div>
+}
 
 @code {
     private IList<CardModelClass> myCards;
@@ -86,6 +145,26 @@
     private IList<CardModelClass> pagedCards;
     private string searchQuery = string.Empty;
     private FilterParameters FilterParameters = new FilterParameters();
+
+    private IList<long> bookmarkedItems = new List<long>();
+
+    private int currentPage = 1;
+    private int totalPages;
+    private int pageSize = 10; // Number of cards per page
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load all cards initially
+        myCards = services.GetAllCards();
+        filteredCards = myCards;
+        await LoadBookmarkedItemsAsync();
+        UpdatePagedCards();
+    }
+
+
+
+
+
 
     private void FilterResults()
     {
@@ -95,44 +174,17 @@
             (string.IsNullOrEmpty(FilterParameters.ManaCostFilter) ||
                 (!string.IsNullOrEmpty(card.ManaCost) && card.ManaCost.Contains(FilterParameters.ManaCostFilter))) &&
             (string.IsNullOrEmpty(FilterParameters.TypeFilter) ||
-                (card.Type != null && card.Type.Split(", ").Contains(FilterParameters.TypeFilter))) &&
+                (card.Type != null && card.Type.Split(", ").Contains(FilterParameters.TypeFilter))) &&  // Adjusted for type matching
             (string.IsNullOrEmpty(searchQuery) || (card.Name != null && card.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
         ).ToList();
 
         UpdatePagedCards();
-    }
-
-    private void ResetFilter()
+    }private void ResetFilter()
     {
         FilterParameters = new FilterParameters();
         filteredCards = myCards;
         UpdatePagedCards();
     }
-
-    private int currentPage = 1;
-    private int totalPages;
-    private int pageSize = 10; // Number of cards per page
-
-    private void UpdatePagedCards()
-    {
-        totalPages = (int)Math.Ceiling(filteredCards.Count / (double)pageSize);
-        pagedCards = filteredCards.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
-    }
-
-    private void OnPageChanged(int newPage)
-    {
-        if (newPage >= 1 && newPage <= totalPages)
-        {
-            currentPage = newPage;
-            UpdatePagedCards();
-        }
-    }
-
-    private bool IsPreviousDisabled => currentPage <= 1;
-    private bool IsNextDisabled => currentPage >= totalPages;
-
-
-    private IList<long> bookmarkedItems = new List<long>();
 
     private async Task LoadBookmarkedItemsAsync()
     {
@@ -161,44 +213,21 @@
         return bookmarkedItems.Contains(id) ? "fas fa-heart" : "far fa-heart";
     }
 
-
-    <ul class="image-list">
-        @if (pagedCards != null && pagedCards.Any())
+    private void UpdatePagedCards()
     {
-        @foreach (var card in pagedCards)
-    {
-        <li>
-            <span class="card-title">
-                <a href="/redcarddetail/@card.Id">@card.Name</a> <br />
-                <button class="bookmark-btn" @onclick="() => ToggleBookmark(card.Id)">
-                    <i class="@GetBookmarkIconClass(card.Id)"></i>
-                </button>
-            </span>
-            <!-- Load images without lazy loading -->
-            <img width="50" src="@(!string.IsNullOrEmpty(card.OriginalImageUrl) ? card.OriginalImageUrl : "images/placeholder.png")" alt="@card.Name" />
-        </li>
-    }
-}
-    else
-{
-        <li>No cards found</li>
-}
-    </ul>
-    @if (totalPages > 1)
-{
-    <div class="pagination">
-        <button @onclick="() => OnPageChanged(currentPage - 1)" disabled="@IsPreviousDisabled">Previous</button>
-
-        @for (int i = 1; i <= totalPages; i++)
-    {
-        <button @onclick="() => OnPageChanged(i)" class="@(currentPage == i ? "active" : "")">
-            @i
-        </button>
+        totalPages = (int)Math.Ceiling(filteredCards.Count / (double)pageSize);
+        pagedCards = filteredCards.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
     }
 
-        <button @onclick="() => OnPageChanged(currentPage + 1)" disabled="@IsNextDisabled">Next</button>
-    </div>
-}
-}
+    private void OnPageChanged(int newPage)
+    {
+        if (newPage >= 1 && newPage <= totalPages)
+        {
+            currentPage = newPage;
+            UpdatePagedCards();
+        }
+    }
 
-
+    private bool IsPreviousDisabled => currentPage <= 1;
+    private bool IsNextDisabled => currentPage >= totalPages;
+}
