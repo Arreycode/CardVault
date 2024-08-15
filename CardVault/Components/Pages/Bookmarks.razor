@@ -53,12 +53,22 @@
     private string searchQuery = string.Empty;
 
     Services services = new Services();
+    private bool isInitialized = false;
 
     protected override async Task OnInitializedAsync()
     {
         myCards = services.GetAllCards();
-        await LoadBookmarkedItemsAsync();
-        FilterBookmarkedCards();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isInitialized)
+        {
+            await LoadBookmarkedItemsAsync();
+            FilterBookmarkedCards();
+            isInitialized = true;
+            StateHasChanged();
+        }
     }
 
     private async Task LoadBookmarkedItemsAsync()
@@ -67,7 +77,6 @@
         if (result.Success)
         {
             bookmarkedItems = result.Value ?? new List<long>();
-            FilterBookmarkedCards();
         }
     }
 
