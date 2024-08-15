@@ -1,0 +1,143 @@
+﻿@page "/carddetail/{Id:long}"
+
+@inject CardVault.Services.Services services
+@using CardVault.ModelsDTO
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage sessionStorage
+
+<head>
+    <title>Card Detail</title>
+    <link rel="stylesheet" href="css/MGT01.css" />
+</head>
+
+<div class="card-detail-container">
+    @if (cardDetail != null)
+    {
+        <h3>@cardDetail.Name</h3>
+        <div class="card-detail">
+            <div class="card-image">
+                <img width="200" src="@(!string.IsNullOrEmpty(cardDetail.OriginalImageUrl) ? cardDetail.OriginalImageUrl : "default_image_url.png")" alt="@cardDetail.Name" />
+            </div>
+            <div class="card-info">
+                <p><strong>Mana Cost:</strong> @cardDetail.ManaCost</p>
+                <p><strong>Converted Mana Cost:</strong> @cardDetail.ConvertedManaCost</p>
+                <p><strong>Type:</strong> @cardDetail.Type</p>
+                <p><strong>Rarity Code:</strong> @cardDetail.RarityCode</p>
+                <p><strong>Set Code:</strong> @cardDetail.SetCode</p>
+                <p><strong>Colors:</strong> @(cardDetail.Colors != null && cardDetail.Colors.Any() ? string.Join(", ", cardDetail.Colors) : "N/A")</p>
+                <p><strong>Flavor:</strong> @cardDetail.Flavor</p>
+                <p><strong>Power:</strong> @cardDetail.Power</p>
+                <p><strong>Toughness:</strong> @cardDetail.Toughness</p>
+                <p><strong>Layout:</strong> @cardDetail.Layout</p>
+                <button class="bookmark-btn" @onclick="() => ToggleBookmark(cardDetail.Id)">
+                    <i class="@GetBookmarkIconClass(cardDetail.Id)"></i> Bookmark
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>Card not found.</p>
+    }
+</div>
+
+<style>
+    .card-detail-container {
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    .card-detail {
+        display: flex;
+        gap: 20px;
+    }
+
+    .card-image img {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+    }
+
+    .card-info {
+        flex-grow: 1;
+    }
+
+        .card-info p {
+            margin: 5px 0;
+        }
+
+    .bookmark-btn {
+        color: black;
+        background-color: #f0f0f0;
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .bookmark-btn i {
+            font-size: 20px;
+        }
+</style>
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    private CardModelClass? cardDetail;
+    private IList<long> bookmarkedItems = new List<long>();
+    private bool isDataLoaded = false;
+
+    protected override void OnInitialized()
+    {
+        // Load the card details on initialization
+        cardDetail = services.GetCardById(Id);
+
+        if (cardDetail == null)
+        {
+            // Handle the case where the card is not found
+            // Redirect to a 404 page or show a not found message
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isDataLoaded)
+        {
+            // Load bookmarked items after the component has rendered
+            await LoadBookmarkedItemsAsync();
+            isDataLoaded = true;
+            StateHasChanged(); // Re-render the component after loading bookmarked items
+        }
+    }
+
+    private async Task LoadBookmarkedItemsAsync()
+    {
+        var result = await sessionStorage.GetAsync<List<long>>("bookmarkedItems");
+        if (result.Success)
+        {
+            bookmarkedItems = result.Value ?? new List<long>();
+        }
+    }
+
+    private async Task ToggleBookmark(long id)
+    {
+        if (bookmarkedItems.Contains(id))
+        {
+            bookmarkedItems.Remove(id);
+        }
+        else
+        {
+            bookmarkedItems.Add(id);
+        }
+        await sessionStorage.SetAsync("bookmarkedItems", bookmarkedItems);
+    }
+
+    private string GetBookmarkIconClass(long id)
+    {
+        return bookmarkedItems.Contains(id) ? "fas fa-heart" : "far fa-heart";
+    }
+}
