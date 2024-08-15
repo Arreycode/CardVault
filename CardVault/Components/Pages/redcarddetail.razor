@@ -40,41 +40,86 @@
         <p>Loading...</p>
     }
 </div>
-private IList<long> bookmarkedItems = new List<long>();
 
-private async Task LoadBookmarkedItemsAsync()
-{
-    var result = await sessionStorage.GetAsync<List<long>>("bookmarkedItems");
-    if (result.Success)
-    {
-        bookmarkedItems = result.Value ?? new List<long>();
+<style>
+    .card-detail-container {
+        padding: 20px;
+        font-family: Arial, sans-serif;
     }
-}
 
-private async Task ToggleBookmark(long id)
-{
-    if (bookmarkedItems.Contains(id))
-    {
-        bookmarkedItems.Remove(id);
+    .card-detail {
+        display: flex;
+        gap: 20px;
     }
-    else
-    {
-        bookmarkedItems.Add(id);
+
+    .card-image img {
+        border: 1px solid #ccc;
+        border-radius: 10px;
     }
-    await sessionStorage.SetAsync("bookmarkedItems", bookmarkedItems);
-}
 
-private string GetBookmarkIconClass(long id)
-{
-    return bookmarkedItems.Contains(id) ? "fas fa-heart" : "far fa-heart";
-}
-protected override async Task OnInitializedAsync()
-{
-    await LoadBookmarkedItemsAsync();
-    redCardDetail = services.GetCardById(Id);
-}
+    .card-info {
+        flex-grow: 1;
+    }
 
+        .card-info p {
+            margin: 5px 0;
+        }
+
+    .bookmark-btn {
+        color: black;
+        background-color: #f0f0f0;
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .bookmark-btn i {
+            font-size: 20px;
+        }
+</style>
 
 @code {
+    [Parameter]
+    public long Id { get; set; }
 
+    private CardModelClass? redCardDetail;
+    private IList<long> bookmarkedItems = new List<long>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBookmarkedItemsAsync();
+        redCardDetail = services.GetCardById(Id);
+    }
+
+    private async Task LoadBookmarkedItemsAsync()
+    {
+        var result = await sessionStorage.GetAsync<List<long>>("bookmarkedItems");
+        if (result.Success)
+        {
+            bookmarkedItems = result.Value ?? new List<long>();
+        }
+    }
+
+    private async Task ToggleBookmark(long id)
+    {
+        if (bookmarkedItems.Contains(id))
+        {
+            bookmarkedItems.Remove(id);
+        }
+        else
+        {
+            bookmarkedItems.Add(id);
+        }
+        await sessionStorage.SetAsync("bookmarkedItems", bookmarkedItems);
+    }
+
+    private string GetBookmarkIconClass(long id)
+    {
+        return bookmarkedItems.Contains(id) ? "fas fa-heart" : "far fa-heart";
+    }
 }
