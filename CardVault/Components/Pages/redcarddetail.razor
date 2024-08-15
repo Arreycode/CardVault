@@ -68,6 +68,11 @@ private string GetBookmarkIconClass(long id)
 {
     return bookmarkedItems.Contains(id) ? "fas fa-heart" : "far fa-heart";
 }
+protected override async Task OnInitializedAsync()
+{
+    await LoadBookmarkedItemsAsync();
+    redCardDetail = services.GetCardById(Id);
+}
 
 
 @code {
