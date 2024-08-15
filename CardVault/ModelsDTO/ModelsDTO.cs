@@ -1,4 +1,4 @@
-﻿namespace BlazorServerAuthenticationAndAuthorization.ModelsDTO
+﻿namespace CardVault.ModelsDTO
 {
     public class CardModelClass
     {
