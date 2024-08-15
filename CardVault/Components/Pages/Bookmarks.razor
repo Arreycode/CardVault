@@ -45,3 +45,9 @@
     }
 </ul>
 
+protected override async Task OnInitializedAsync()
+{
+    myCards = services.GetAllCards();
+    await LoadBookmarkedItemsAsync();
+    FilterBookmarkedCards();
+}
