@@ -5,7 +5,10 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage sessionStorage
 
-
+<head>
+    <title>Card Detail</title>
+    <link rel="stylesheet" href="css/MGT01.css" />
+</head>
 
 <div class="card-detail-container">
     @if (cardDetail != null)
@@ -86,15 +89,28 @@
 
     private CardModelClass? cardDetail;
     private IList<long> bookmarkedItems = new List<long>();
+    private bool isDataLoaded = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await LoadBookmarkedItemsAsync();
+        // Load the card details on initialization
         cardDetail = services.GetCardById(Id);
 
         if (cardDetail == null)
         {
+            // Handle the case where the card is not found
             // Redirect to a 404 page or show a not found message
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isDataLoaded)
+        {
+            // Load bookmarked items after the component has rendered
+            await LoadBookmarkedItemsAsync();
+            isDataLoaded = true;
+            StateHasChanged(); // Re-render the component after loading bookmarked items
         }
     }
 
