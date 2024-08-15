@@ -1,5 +1,85 @@
 ﻿<h3>MGT01</h3>
 
+<div class="search-container">
+    <input type="text" class="search-field" placeholder="Search" @bind="searchQuery" @bind:event="oninput" />
+    <button type="button" class="search-btn" @onclick="FilterResults">
+        <i class="fas fa-search"></i> Search
+    </button>
+    <br><br>
+</div>
+
+<div class="search-container">
+    <select @bind="FilterParameters.RarityCodeFilter">
+        <option value="">Rarity Code</option>
+        <option value="C">Common</option>
+        <option value="U">Uncommon</option>
+        <option value="R">Rare</option>
+        <option value="M">Mythic</option>
+        <option value="S">Special</option>
+        <option value="B">Bonus</option>
+    </select>
+
+    <select @bind="FilterParameters.ColorFilter">
+        <option value="">Color</option>
+        <option value="White">White</option>
+        <option value="Black">Black</option>
+        <option value="Blue">Blue</option>
+        <option value="Red">Red</option>
+        <option value="Green">Green</option>
+    </select>
+
+    <select @bind="FilterParameters.ManaCostFilter">
+        <option value="">Mana Cost</option>
+        @for (int i = 0; i <= 16; i++)
+        {
+            <option value="@i">@i</option>
+        }
+        <option value="1000000">1000000</option>
+    </select>
+
+    <select @bind="FilterParameters.TypeFilter">
+        <option value="">Type</option>
+        <option value="Artifact">Artifact</option>
+        <option value="Wolf">Wolf</option>
+        <option value="Knights">Knights</option>
+        <option value="Instant">Instant</option>
+        <option value="Planeswalker">Planeswalker</option>
+        <option value="Jaguar">Jaguar</option>
+        <option value="Goblin">Goblin</option>
+        <option value="See">See</option>
+        <option value="Enchantment">Enchantment</option>
+        <option value="Elemental">Elemental</option>
+        <option value="Scariest">Scariest</option>
+        <option value="Hero">Hero</option>
+        <option value="Dragon">Dragon</option>
+        <option value="Land">Land</option>
+        <option value="Tribal">Tribal</option>
+        <option value="Specter">Specter</option>
+        <option value="Eaturecray">Eaturecray</option>
+        <option value="Summon">Summon</option>
+        <option value="Scheme">Scheme</option>
+        <option value="Ever">Ever</option>
+        <option value="Phenomenon">Phenomenon</option>
+        <option value="Creature">Creature</option>
+        <option value="Vanguard">Vanguard</option>
+        <option value="You’ll">You’ll</option>
+        <option value="Plane">Plane</option>
+        <option value="Sorcery">Sorcery</option>
+        <option value="Conspiracy">Conspiracy</option>
+    </select>
+
+    <button type="button" class="filter-btn" @onclick="FilterResults">
+        Apply Filters
+    </button>
+    <button type="button" class="filter-btn" @onclick="ResetFilter">
+        Reset
+    </button>
+</div>
+
+
+
+
+
 @code {
 
 }
