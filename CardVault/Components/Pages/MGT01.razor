@@ -1,18 +1,20 @@
-﻿@rendermode InteractiveServer
+﻿@page "/MGT01"
 
-@page "/MGT01"
-@using CardVault.Services
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@inject Services services
 @inject ProtectedSessionStorage sessionStorage
+@inject CardVault.Services.Services services
 @using CardVault.ModelsDTO
 @using System.Linq
+
+@rendermode InteractiveServer
 
 <head>
     <title>CARDS COLLECTION</title>
     <link rel="stylesheet" href="css/MGT01.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
+
+<h3>Cards</h3>
 
 <div class="search-container">
     <input type="text" class="search-field" placeholder="Search" @bind="searchQuery" @bind:event="oninput" />
@@ -53,14 +55,10 @@
 
     <select @bind="FilterParameters.TypeFilter">
         <option value="">Type</option>
+        <!-- Your type options here -->
         <option value="Artifact">Artifact</option>
-        <option value="Creature">Creature</option>
-        <option value="Enchantment">Enchantment</option>
-        <option value="Instant">Instant</option>
-        <option value="Planeswalker">Planeswalker</option>
-        <option value="Sorcery">Sorcery</option>
-        <option value="Land">Land</option>
-        <!-- Add other types as needed -->
+        <option value="Wolf">Wolf</option>
+        <!-- other options -->
     </select>
 
     <button type="button" class="filter-btn" @onclick="FilterResults">
@@ -78,7 +76,7 @@
         {
             <li>
                 <span class="card-title">
-                    <a href="/carddetail/@card.Id">@card.Name</a> <br />
+                    <a href="/redcarddetail/@card.Id">@card.Name</a> <br />
                     <button class="bookmark-btn" @onclick="() => ToggleBookmark(card.Id)">
                         <i class="@GetBookmarkIconClass(card.Id)"></i>
                     </button>
@@ -136,7 +134,6 @@
     {
         if (firstRender && !isDataLoaded)
         {
-            // Load bookmarked items after the first render
             await LoadBookmarkedItemsAsync();
             UpdatePagedCards();
             isDataLoaded = true;
@@ -175,21 +172,6 @@
         UpdatePagedCards();
     }
 
-    private void UpdatePagedCards()
-    {
-        totalPages = (int)Math.Ceiling(filteredCards.Count / (double)pageSize);
-        pagedCards = filteredCards.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
-    }
-
-    private void OnPageChanged(int newPage)
-    {
-        if (newPage >= 1 && newPage <= totalPages)
-        {
-            currentPage = newPage;
-            UpdatePagedCards();
-        }
-    }
-
     private async Task ToggleBookmark(long id)
     {
         if (bookmarkedItems.Contains(id))
@@ -207,6 +189,22 @@
     private string GetBookmarkIconClass(long id)
     {
         return bookmarkedItems.Contains(id) ? "fas fa-heart" : "far fa-heart";
+    }
+
+    private void UpdatePagedCards()
+    {
+        totalPages = (int)Math.Ceiling(filteredCards.Count / (double)pageSize);
+        pagedCards = filteredCards.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+        StateHasChanged(); // Ensure the UI updates
+    }
+
+    private void OnPageChanged(int newPage)
+    {
+        if (newPage >= 1 && newPage <= totalPages)
+        {
+            currentPage = newPage;
+            UpdatePagedCards();
+        }
     }
 
     private bool IsPreviousDisabled => currentPage <= 1;
