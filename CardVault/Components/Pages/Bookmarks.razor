@@ -21,7 +21,6 @@
     </button>
 </div>
 
-
 <ul class="image-list">
     @if (bookmarkedCards != null && bookmarkedCards.Any())
     {
@@ -45,45 +44,62 @@
     }
 </ul>
 
-protected override async Task OnInitializedAsync()
-{
-    myCards = services.GetAllCards();
-    await LoadBookmarkedItemsAsync();
-    FilterBookmarkedCards();
-}
-private void FilterResults()
-{
-    if (string.IsNullOrWhiteSpace(searchQuery))
+@code {
+    private IList<CardModelClass> myCards;
+    private IList<CardModelClass> bookmarkedCards;
+    private IList<long> bookmarkedItems = new List<long>();
+    private string searchQuery = string.Empty;
+
+    Services services = new Services();
+
+    protected override async Task OnInitializedAsync()
     {
+        myCards = services.GetAllCards();
+        await LoadBookmarkedItemsAsync();
         FilterBookmarkedCards();
     }
-    else
+
+    private async Task LoadBookmarkedItemsAsync()
     {
-        var query = searchQuery.ToLower();
-        bookmarkedCards = bookmarkedCards
-            .Where(card => card.Name.ToLower().Contains(query))
-            .ToList();
+        var result = await sessionStorage.GetAsync<List<long>>("bookmarkedItems");
+        if (result.Success)
+        {
+            bookmarkedItems = result.Value ?? new List<long>();
+            FilterBookmarkedCards();
+        }
     }
-}
-private async Task ToggleBookmark(long id)
-{
-    if (bookmarkedItems.Contains(id))
+
+    private void FilterBookmarkedCards()
     {
-        bookmarkedItems.Remove(id);
-        bookmarkedCards = bookmarkedCards.Where(card => card.Id != id).ToList();
+        bookmarkedCards = myCards.Where(card => bookmarkedItems.Contains(card.Id)).ToList();
     }
-    else
+
+    private void FilterResults()
     {
-        bookmarkedItems.Add(id);
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            FilterBookmarkedCards();
+        }
+        else
+        {
+            var query = searchQuery.ToLower();
+            bookmarkedCards = bookmarkedCards
+                .Where(card => card.Name.ToLower().Contains(query))
+                .ToList();
+        }
     }
-    await sessionStorage.SetAsync("bookmarkedItems", bookmarkedItems);
-}
-private async Task LoadBookmarkedItemsAsync()
-{
-    var result = await sessionStorage.GetAsync<List<long>>("bookmarkedItems");
-    if (result.Success)
+
+    private async Task ToggleBookmark(long id)
     {
-        bookmarkedItems = result.Value ?? new List<long>();
-        FilterBookmarkedCards();
+        if (bookmarkedItems.Contains(id))
+        {
+            bookmarkedItems.Remove(id);
+            bookmarkedCards = bookmarkedCards.Where(card => card.Id != id).ToList();
+        }
+        else
+        {
+            bookmarkedItems.Add(id);
+        }
+        await sessionStorage.SetAsync("bookmarkedItems", bookmarkedItems);
     }
 }
