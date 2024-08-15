@@ -3,12 +3,11 @@
 @using CardVault.ModelsDTO
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage sessionStorage
-
 @using Microsoft.EntityFrameworkCore
 @using System.Linq
-
 @using CardVault.Services
 @rendermode InteractiveServer
+
 <head>
     <title>Bookmarks Page</title>
     <link rel="stylesheet" href="css/MGT01.css" />
@@ -24,6 +23,55 @@
     </button>
 </div>
 
+<div class="search-container">
+    <select @bind="FilterParameters.RarityCodeFilter">
+        <option value="">Rarity Code</option>
+        <option value="C">Common</option>
+        <option value="U">Uncommon</option>
+        <option value="R">Rare</option>
+        <option value="M">Mythic</option>
+        <option value="S">Special</option>
+        <option value="B">Bonus</option>
+    </select>
+
+    <select @bind="FilterParameters.ColorFilter">
+        <option value="">Color</option>
+        <option value="White">White</option>
+        <option value="Black">Black</option>
+        <option value="Blue">Blue</option>
+        <option value="Red">Red</option>
+        <option value="Green">Green</option>
+    </select>
+
+    <select @bind="FilterParameters.ManaCostFilter">
+        <option value="">Mana Cost</option>
+        @for (int i = 0; i <= 16; i++)
+        {
+            <option value="@i">@i</option>
+        }
+        <option value="1000000">1000000</option>
+    </select>
+
+    <select @bind="FilterParameters.TypeFilter">
+        <option value="">Type</option>
+        <option value="Artifact">Artifact</option>
+        <option value="Creature">Creature</option>
+        <option value="Enchantment">Enchantment</option>
+        <option value="Instant">Instant</option>
+        <option value="Planeswalker">Planeswalker</option>
+        <option value="Sorcery">Sorcery</option>
+        <option value="Land">Land</option>
+        <!-- Add other types as needed -->
+    </select>
+
+    <button type="button" class="filter-btn" @onclick="FilterResults">
+        Apply Filters
+    </button>
+    <button type="button" class="filter-btn" @onclick="ResetFilter">
+        Reset
+    </button>
+</div>
+
 <ul class="image-list">
     @if (bookmarkedCards != null && bookmarkedCards.Any())
     {
@@ -36,7 +84,6 @@
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </span>
-                <!-- Ensure the image path is correct and use a placeholder if it's null or empty -->
                 <img width="50" src="@(!string.IsNullOrEmpty(card.OriginalImageUrl) ? card.OriginalImageUrl : "images/placeholder.png")" alt="@card.Name" />
             </li>
         }
@@ -52,6 +99,7 @@
     private IList<CardModelClass> bookmarkedCards;
     private IList<long> bookmarkedItems = new List<long>();
     private string searchQuery = string.Empty;
+    private FilterParameters FilterParameters = new FilterParameters();
 
     Services services = new Services();
     private bool isInitialized = false;
@@ -88,17 +136,23 @@
 
     private void FilterResults()
     {
-        if (string.IsNullOrWhiteSpace(searchQuery))
-        {
-            FilterBookmarkedCards();
-        }
-        else
-        {
-            var query = searchQuery.ToLower();
-            bookmarkedCards = bookmarkedCards
-                .Where(card => card.Name.ToLower().Contains(query))
-                .ToList();
-        }
+        var query = searchQuery.ToLower();
+
+        bookmarkedCards = myCards.Where(card =>
+            bookmarkedItems.Contains(card.Id) &&
+            (string.IsNullOrEmpty(FilterParameters.RarityCodeFilter) || card.RarityCode == FilterParameters.RarityCodeFilter) &&
+            (string.IsNullOrEmpty(FilterParameters.ColorFilter) || (card.Colors != null && card.Colors.Contains(FilterParameters.ColorFilter))) &&
+            (string.IsNullOrEmpty(FilterParameters.ManaCostFilter) || (!string.IsNullOrEmpty(card.ManaCost) && card.ManaCost.Contains(FilterParameters.ManaCostFilter))) &&
+            (string.IsNullOrEmpty(FilterParameters.TypeFilter) || (!string.IsNullOrEmpty(card.Type) && card.Type.Split(", ").Contains(FilterParameters.TypeFilter))) &&
+            (string.IsNullOrEmpty(searchQuery) || (!string.IsNullOrEmpty(card.Name) && card.Name.ToLower().Contains(query)))
+        ).ToList();
+    }
+
+    private void ResetFilter()
+    {
+        FilterParameters = new FilterParameters();
+        searchQuery = string.Empty;
+        FilterBookmarkedCards();
     }
 
     private async Task ToggleBookmark(long id)
@@ -113,5 +167,6 @@
             bookmarkedItems.Add(id);
         }
         await sessionStorage.SetAsync("bookmarkedItems", bookmarkedItems);
+        StateHasChanged(); // Ensure the UI updates
     }
 }
