@@ -108,5 +108,27 @@
         filteredCards = myCards;
         UpdatePagedCards();
     }
+
+    private int currentPage = 1;
+    private int totalPages;
+    private int pageSize = 10; // Number of cards per page
+
+    private void UpdatePagedCards()
+    {
+        totalPages = (int)Math.Ceiling(filteredCards.Count / (double)pageSize);
+        pagedCards = filteredCards.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+    }
+
+    private void OnPageChanged(int newPage)
+    {
+        if (newPage >= 1 && newPage <= totalPages)
+        {
+            currentPage = newPage;
+            UpdatePagedCards();
+        }
+    }
+
+    private bool IsPreviousDisabled => currentPage <= 1;
+    private bool IsNextDisabled => currentPage >= totalPages;
 }
 
