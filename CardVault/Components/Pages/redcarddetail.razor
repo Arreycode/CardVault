@@ -40,6 +40,34 @@
         <p>Loading...</p>
     }
 </div>
+private IList<long> bookmarkedItems = new List<long>();
+
+private async Task LoadBookmarkedItemsAsync()
+{
+    var result = await sessionStorage.GetAsync<List<long>>("bookmarkedItems");
+    if (result.Success)
+    {
+        bookmarkedItems = result.Value ?? new List<long>();
+    }
+}
+
+private async Task ToggleBookmark(long id)
+{
+    if (bookmarkedItems.Contains(id))
+    {
+        bookmarkedItems.Remove(id);
+    }
+    else
+    {
+        bookmarkedItems.Add(id);
+    }
+    await sessionStorage.SetAsync("bookmarkedItems", bookmarkedItems);
+}
+
+private string GetBookmarkIconClass(long id)
+{
+    return bookmarkedItems.Contains(id) ? "fas fa-heart" : "far fa-heart";
+}
 
 
 @code {
