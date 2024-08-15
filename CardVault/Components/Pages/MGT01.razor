@@ -81,5 +81,32 @@
 
 
 @code {
+    private IList<CardModelClass> myCards;
+    private IList<CardModelClass> filteredCards;
+    private IList<CardModelClass> pagedCards;
+    private string searchQuery = string.Empty;
+    private FilterParameters FilterParameters = new FilterParameters();
 
+    private void FilterResults()
+    {
+        filteredCards = myCards.Where(card =>
+            (string.IsNullOrEmpty(FilterParameters.RarityCodeFilter) || card.RarityCode == FilterParameters.RarityCodeFilter) &&
+            (string.IsNullOrEmpty(FilterParameters.ColorFilter) || (card.Colors != null && card.Colors.Contains(FilterParameters.ColorFilter))) &&
+            (string.IsNullOrEmpty(FilterParameters.ManaCostFilter) ||
+                (!string.IsNullOrEmpty(card.ManaCost) && card.ManaCost.Contains(FilterParameters.ManaCostFilter))) &&
+            (string.IsNullOrEmpty(FilterParameters.TypeFilter) ||
+                (card.Type != null && card.Type.Split(", ").Contains(FilterParameters.TypeFilter))) &&
+            (string.IsNullOrEmpty(searchQuery) || (card.Name != null && card.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
+        ).ToList();
+
+        UpdatePagedCards();
+    }
+
+    private void ResetFilter()
+    {
+        FilterParameters = new FilterParameters();
+        filteredCards = myCards;
+        UpdatePagedCards();
+    }
 }
+
