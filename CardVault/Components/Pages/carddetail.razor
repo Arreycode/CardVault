@@ -1,4 +1,4 @@
-﻿<h3>redcarddetail</h3>
+﻿@page "/carddetail/{Id:long}"
 
 @inject CardVault.Services.Services services
 @using CardVault.ModelsDTO
@@ -6,38 +6,38 @@
 @inject ProtectedSessionStorage sessionStorage
 
 <head>
-    <title>Single Detail</title>
+    <title>Card Detail</title>
     <link rel="stylesheet" href="css/MGT01.css" />
 </head>
 
 <div class="card-detail-container">
-    @if (redCardDetail != null)
+    @if (cardDetail != null)
     {
-        <h3>@redCardDetail.Name</h3>
+        <h3>@cardDetail.Name</h3>
         <div class="card-detail">
             <div class="card-image">
-                <img width="200" src="@(!string.IsNullOrEmpty(redCardDetail.OriginalImageUrl) ? redCardDetail.OriginalImageUrl : "default_image_url.png")" alt="@redCardDetail.Name" />
+                <img width="200" src="@(!string.IsNullOrEmpty(cardDetail.OriginalImageUrl) ? cardDetail.OriginalImageUrl : "default_image_url.png")" alt="@cardDetail.Name" />
             </div>
             <div class="card-info">
-                <p><strong>Mana Cost:</strong> @redCardDetail.ManaCost</p>
-                <p><strong>Converted Mana Cost:</strong> @redCardDetail.ConvertedManaCost</p>
-                <p><strong>Type:</strong> @redCardDetail.Type</p>
-                <p><strong>Rarity Code:</strong> @redCardDetail.RarityCode</p>
-                <p><strong>Set Code:</strong> @redCardDetail.SetCode</p>
-                <p><strong>Colors:</strong> @(redCardDetail.Colors != null && redCardDetail.Colors.Any() ? string.Join(", ", redCardDetail.Colors) : "N/A")</p>
-                <p><strong>Flavor:</strong> @redCardDetail.Flavor</p>
-                <p><strong>Power:</strong> @redCardDetail.Power</p>
-                <p><strong>Toughness:</strong> @redCardDetail.Toughness</p>
-                <p><strong>Layout:</strong> @redCardDetail.Layout</p>
-                <button class="bookmark-btn" @onclick="() => ToggleBookmark(redCardDetail.Id)">
-                    <i class="@GetBookmarkIconClass(redCardDetail.Id)"></i> Bookmark
+                <p><strong>Mana Cost:</strong> @cardDetail.ManaCost</p>
+                <p><strong>Converted Mana Cost:</strong> @cardDetail.ConvertedManaCost</p>
+                <p><strong>Type:</strong> @cardDetail.Type</p>
+                <p><strong>Rarity Code:</strong> @cardDetail.RarityCode</p>
+                <p><strong>Set Code:</strong> @cardDetail.SetCode</p>
+                <p><strong>Colors:</strong> @(cardDetail.Colors != null && cardDetail.Colors.Any() ? string.Join(", ", cardDetail.Colors) : "N/A")</p>
+                <p><strong>Flavor:</strong> @cardDetail.Flavor</p>
+                <p><strong>Power:</strong> @cardDetail.Power</p>
+                <p><strong>Toughness:</strong> @cardDetail.Toughness</p>
+                <p><strong>Layout:</strong> @cardDetail.Layout</p>
+                <button class="bookmark-btn" @onclick="() => ToggleBookmark(cardDetail.Id)">
+                    <i class="@GetBookmarkIconClass(cardDetail.Id)"></i> Bookmark
                 </button>
             </div>
         </div>
     }
     else
     {
-        <p>Loading...</p>
+        <p>Card not found.</p>
     }
 </div>
 
@@ -87,13 +87,18 @@
     [Parameter]
     public long Id { get; set; }
 
-    private CardModelClass? redCardDetail;
+    private CardModelClass? cardDetail;
     private IList<long> bookmarkedItems = new List<long>();
 
     protected override async Task OnInitializedAsync()
     {
         await LoadBookmarkedItemsAsync();
-        redCardDetail = services.GetCardById(Id);
+        cardDetail = services.GetCardById(Id);
+
+        if (cardDetail == null)
+        {
+            // Redirect to a 404 page or show a not found message
+        }
     }
 
     private async Task LoadBookmarkedItemsAsync()
