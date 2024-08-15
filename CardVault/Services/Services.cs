@@ -46,7 +46,7 @@ namespace CardVault.Services
                     Types = p.CardTypes.Select(ct => ct.Type.Name).ToList()
                 })
                 .OrderBy(o => o.Name)
-                .Take(150)
+                .Take(800)
                 .ToList();
         }
 

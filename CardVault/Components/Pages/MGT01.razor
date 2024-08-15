@@ -55,7 +55,6 @@
 
     <select @bind="FilterParameters.TypeFilter">
         <option value="">Type</option>
-        
         <option value="Artifact">Artifact</option>
         <option value="Wolf">Wolf</option>
         <option value="Knights">Knights</option>
@@ -100,7 +99,7 @@
         {
             <li>
                 <span class="card-title">
-                    <a href="/redcarddetail/@card.Id">@card.Name</a> <br />
+                    <a href="/carddetail/@card.Id">@card.Name</a> <br />
                     <button class="bookmark-btn" @onclick="() => ToggleBookmark(card.Id)">
                         <i class="@GetBookmarkIconClass(card.Id)"></i>
                     </button>
@@ -142,7 +141,7 @@
 
     private int currentPage = 1;
     private int totalPages;
-    private int pageSize = 10; // Number of cards per page
+    private int pageSize = 70; // Number of cards per page
 
     private bool isDataLoaded = false;
 
