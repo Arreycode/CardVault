@@ -1,7 +1,59 @@
 ﻿@page "/"
+@inject NavigationManager Navigation
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="home-container">
+    <div class="header text-center">
+        <h1>Welcome to Card vault Collections</h1>
+        <p>Your ultimate tool for managing and exploring your card collections effortlessly.</p>
+    </div>
 
-Welcome to your new app.
+    <div class="content">
+        <div class="how-to-section">
+            <h2>How to Use the Application:</h2>
+            <div class="steps">
+                <div class="step">
+                    <i class="fas fa-search step-icon"></i>
+                    <div class="step-content">
+                        <h3>Browse Collections</h3>
+                        <p>Click the button below to browse through all the available card collections.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <i class="fas fa-hand-pointer step-icon"></i>
+                    <div class="step-content">
+                        <h3>Select a Card</h3>
+                        <p>Browse through the collections and click on any card to select it.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <i class="fas fa-info-circle step-icon"></i>
+                    <div class="step-content">
+                        <h3>View Card Details</h3>
+                        <p>Once you find a card of interest, click on its name to view detailed information about it.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <i class="fas fa-heart step-icon"></i>
+                    <div class="step-content">
+                        <h3>Bookmark Your Favorites</h3>
+                        <p>You can bookmark cards by clicking the heart icon next to each card name for easy access later.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <i class="fas fa-trash-alt step-icon"></i>
+                    <div class="step-content">
+                        <h3>Delete a Bookmark</h3>
+                        <p>You can remove a card from your bookmarks by clicking the trash icon next to the card in your bookmarks list.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <button class="btn btn-primary btn-lg browse-btn" @onclick='() => Navigation.NavigateTo("/MGT01")'>Browse Collections</button>
+        </div>
+    </div>
+</div>
+
