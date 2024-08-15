@@ -20,3 +20,28 @@
         <i class="fas fa-search"></i> Search
     </button>
 </div>
+
+
+<ul class="image-list">
+    @if (bookmarkedCards != null && bookmarkedCards.Any())
+    {
+        @foreach (CardModelClass card in bookmarkedCards)
+        {
+            <li>
+                <span class="card-title">
+                    @card.Name <br />
+                    <button class="bookmark-btn" @onclick="() => ToggleBookmark(card.Id)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </span>
+                <!-- Ensure the image path is correct and use a placeholder if it's null or empty -->
+                <img width="50" src="@(!string.IsNullOrEmpty(card.OriginalImageUrl) ? card.OriginalImageUrl : "images/placeholder.png")" alt="@card.Name" />
+            </li>
+        }
+    }
+    else
+    {
+        <p>No bookmarked items found.</p>
+    }
+</ul>
+
