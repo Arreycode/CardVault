@@ -1,11 +1,12 @@
-﻿using CardVault.ModelsDTO;
+﻿using CardVault.Models;
+using CardVault.ModelsDTO;
 using CardVault.Models;
+using CardVault.ModelsDTO;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
-
-namespace CardVault.Services
+namespace BlazorServerAuthenticationAndAuthorization.Services
 {
     public class Services
     {
@@ -38,13 +39,13 @@ namespace CardVault.Services
                     Toughness = p.Toughness,
                     Layout = p.Layout,
                     MultiverseId = p.MultiverseId,
-                    OriginalImageUrl = p.OriginalImageUrl ?? "images/placeholder.png", // Handle nulls by providing a default value
+                    OriginalImageUrl = p.OriginalImageUrl ?? "images/placeholder.png",
                     Image = p.Image,
                     Colors = p.CardColors.Select(cc => cc.Color.Name).ToList(),
                     Types = p.CardTypes.Select(ct => ct.Type.Name).ToList()
                 })
                 .OrderBy(o => o.Name)
-                .Take(150) // Consider initial page size
+                .Take(150)
                 .ToList();
         }
 
@@ -71,7 +72,7 @@ namespace CardVault.Services
                     Toughness = p.Toughness,
                     Layout = p.Layout,
                     MultiverseId = p.MultiverseId,
-                    OriginalImageUrl = p.OriginalImageUrl ?? "images/placeholder.png", // Handle nulls by providing a default value
+                    OriginalImageUrl = p.OriginalImageUrl ?? "images/placeholder.png",
                     Image = p.Image,
                     Colors = p.CardColors.Select(cc => cc.Color.Name).ToList(),
                     Types = p.CardTypes.Select(ct => ct.Type.Name).ToList()
@@ -123,7 +124,7 @@ namespace CardVault.Services
                 Toughness = p.Toughness,
                 Layout = p.Layout,
                 MultiverseId = p.MultiverseId,
-                OriginalImageUrl = p.OriginalImageUrl ?? "images/placeholder.png", // Handle nulls by providing a default value
+                OriginalImageUrl = p.OriginalImageUrl ?? "images/placeholder.png",
                 Image = p.Image,
                 Colors = p.CardColors.Select(cc => cc.Color.Name).ToList(),
                 Types = p.CardTypes.Select(ct => ct.Type.Name).ToList()

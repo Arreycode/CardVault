@@ -1,6 +1,9 @@
-﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+﻿@page "/MGT01"
+@using CardVault.Services
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
 @inject ProtectedSessionStorage sessionStorage
-@inject CardVault.Services.Services services
+
 @using CardVault.ModelsDTO
 @using System.Linq
 
@@ -155,7 +158,7 @@
     protected override async Task OnInitializedAsync()
     {
         // Load all cards initially
-        myCards = services.GetAllCards();
+        myCards = Services.GetAllCards();
         filteredCards = myCards;
         await LoadBookmarkedItemsAsync();
         UpdatePagedCards();
@@ -179,7 +182,22 @@
         ).ToList();
 
         UpdatePagedCards();
-    }private void ResetFilter()
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private void ResetFilter()
     {
         FilterParameters = new FilterParameters();
         filteredCards = myCards;
