@@ -1,0 +1,165 @@
+﻿/* General Styles */
+.home-container {
+    font-family: 'Arial', sans-serif;
+    color: #eee;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background-color: #2c3e50;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid #34495e;
+    position: relative;
+}
+
+    /* Adding Card Icon as a Background */
+    .home-container::before {
+        content: "\f3b3"; /* Font Awesome's card icon */
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        font-size: 200px;
+        color: rgba(255, 255, 255, 0.1);
+        position: absolute;
+        top: 50%;
+        left: -100px; /* Adjust position as needed */
+        transform: translateY(-50%);
+        z-index: 0;
+    }
+
+    .home-container > * {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Header Styles */
+.header {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+h1 {
+    color: #f39c12;
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px #000;
+}
+
+p {
+    font-size: 1.2rem;
+    color: #bdc3c7;
+    margin-top: 10px;
+}
+
+/* How-To Section */
+.how-to-section {
+    margin-top: 40px;
+    background-color: #34495e;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .how-to-section::before {
+        content: "\f3b3"; /* Font Awesome's card icon */
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        font-size: 180px;
+        color: rgba(255, 255, 255, 0.1);
+        position: absolute;
+        top: 50%;
+        left: -100px; /* Adjust position as needed */
+        transform: translateY(-50%);
+        z-index: 0;
+    }
+
+    .how-to-section > * {
+        position: relative;
+        z-index: 1;
+    }
+
+h2 {
+    color: #e74c3c;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 3px #000;
+}
+
+/* Steps */
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    background-color: #2c3e50;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+    .step::before {
+        content: "\f3b3"; /* Font Awesome's card icon */
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        font-size: 150px;
+        color: rgba(255, 255, 255, 0.05);
+        position: absolute;
+        top: 50%;
+        left: -80px; /* Adjust position as needed */
+        transform: translateY(-50%);
+        z-index: 0;
+    }
+
+    .step > * {
+        position: relative;
+        z-index: 1;
+    }
+
+.step-icon {
+    font-size: 2.5rem;
+    color: #f39c12;
+}
+
+.step-content h3 {
+    margin-top: 0;
+    font-size: 1.8rem;
+    color: #ecf0f1;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.step-content p {
+    margin: 0;
+    color: #bdc3c7;
+    font-size: 1.2rem;
+}
+
+/* Browse Button */
+.browse-btn {
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+    .browse-btn:hover {
+        background-color: #c0392b;
+        transform: scale(1.05);
+    }
+
+/* Additional Styles */
+.text-center {
+    text-align: center;
+}
+
+.mt-5 {
+    margin-top: 3rem;
+}
