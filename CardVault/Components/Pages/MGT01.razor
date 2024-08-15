@@ -160,5 +160,31 @@
     {
         return bookmarkedItems.Contains(id) ? "fas fa-heart" : "far fa-heart";
     }
+
+
+    <ul class="image-list">
+        @if (pagedCards != null && pagedCards.Any())
+    {
+        @foreach (var card in pagedCards)
+    {
+        <li>
+            <span class="card-title">
+                <a href="/redcarddetail/@card.Id">@card.Name</a> <br />
+                <button class="bookmark-btn" @onclick="() => ToggleBookmark(card.Id)">
+                    <i class="@GetBookmarkIconClass(card.Id)"></i>
+                </button>
+            </span>
+            <!-- Load images without lazy loading -->
+            <img width="50" src="@(!string.IsNullOrEmpty(card.OriginalImageUrl) ? card.OriginalImageUrl : "images/placeholder.png")" alt="@card.Name" />
+        </li>
+    }
 }
+    else
+{
+        <li>No cards found</li>
+}
+    </ul>
+
+}
+
 
