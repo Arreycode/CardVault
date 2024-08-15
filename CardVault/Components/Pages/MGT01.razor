@@ -1,22 +1,18 @@
-﻿@page "/MGT01"
+﻿@rendermode InteractiveServer
+
+@page "/MGT01"
 @using CardVault.Services
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-
 @inject Services services
 @inject ProtectedSessionStorage sessionStorage
-
 @using CardVault.ModelsDTO
 @using System.Linq
 
 <head>
     <title>CARDS COLLECTION</title>
-    
     <link rel="stylesheet" href="css/MGT01.css" />
-    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-
-<h3>Cards</h3>
 
 <div class="search-container">
     <input type="text" class="search-field" placeholder="Search" @bind="searchQuery" @bind:event="oninput" />
@@ -58,32 +54,13 @@
     <select @bind="FilterParameters.TypeFilter">
         <option value="">Type</option>
         <option value="Artifact">Artifact</option>
-        <option value="Wolf">Wolf</option>
-        <option value="Knights">Knights</option>
+        <option value="Creature">Creature</option>
+        <option value="Enchantment">Enchantment</option>
         <option value="Instant">Instant</option>
         <option value="Planeswalker">Planeswalker</option>
-        <option value="Jaguar">Jaguar</option>
-        <option value="Goblin">Goblin</option>
-        <option value="See">See</option>
-        <option value="Enchantment">Enchantment</option>
-        <option value="Elemental">Elemental</option>
-        <option value="Scariest">Scariest</option>
-        <option value="Hero">Hero</option>
-        <option value="Dragon">Dragon</option>
-        <option value="Land">Land</option>
-        <option value="Tribal">Tribal</option>
-        <option value="Specter">Specter</option>
-        <option value="Eaturecray">Eaturecray</option>
-        <option value="Summon">Summon</option>
-        <option value="Scheme">Scheme</option>
-        <option value="Ever">Ever</option>
-        <option value="Phenomenon">Phenomenon</option>
-        <option value="Creature">Creature</option>
-        <option value="Vanguard">Vanguard</option>
-        <option value="You’ll">You’ll</option>
-        <option value="Plane">Plane</option>
         <option value="Sorcery">Sorcery</option>
-        <option value="Conspiracy">Conspiracy</option>
+        <option value="Land">Land</option>
+        <!-- Add other types as needed -->
     </select>
 
     <button type="button" class="filter-btn" @onclick="FilterResults">
@@ -224,6 +201,7 @@
             bookmarkedItems.Add(id);
         }
         await sessionStorage.SetAsync("bookmarkedItems", bookmarkedItems);
+        StateHasChanged(); // Ensure the UI updates
     }
 
     private string GetBookmarkIconClass(long id)
