@@ -1,12 +1,13 @@
 ﻿using CardVault.Models;
 using CardVault.ModelsDTO;
-using CardVault.Models;
-using CardVault.ModelsDTO;
+using CardVault.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BlazorServerAuthenticationAndAuthorization.Services
+
+
+namespace CardVault.Services
 {
     public class Services
     {
