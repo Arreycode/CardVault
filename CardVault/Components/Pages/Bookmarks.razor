@@ -78,3 +78,12 @@ private async Task ToggleBookmark(long id)
     }
     await sessionStorage.SetAsync("bookmarkedItems", bookmarkedItems);
 }
+private async Task LoadBookmarkedItemsAsync()
+{
+    var result = await sessionStorage.GetAsync<List<long>>("bookmarkedItems");
+    if (result.Success)
+    {
+        bookmarkedItems = result.Value ?? new List<long>();
+        FilterBookmarkedCards();
+    }
+}
