@@ -2,8 +2,8 @@
 @using CardVault.Services
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
-@inject ProtectedSessionStorage sessionStorage
 @inject Services services
+@inject ProtectedSessionStorage sessionStorage
 
 @using CardVault.ModelsDTO
 @using System.Linq
@@ -43,13 +43,6 @@
         <option value="Green">Green</option>
     </select>
 
-
-
-
-
-
-
-
     <select @bind="FilterParameters.ManaCostFilter">
         <option value="">Mana Cost</option>
         @for (int i = 0; i <= 16; i++)
@@ -58,12 +51,6 @@
         }
         <option value="1000000">1000000</option>
     </select>
-
-
-
-
-
-
 
     <select @bind="FilterParameters.TypeFilter">
         <option value="">Type</option>
@@ -116,7 +103,6 @@
                         <i class="@GetBookmarkIconClass(card.Id)"></i>
                     </button>
                 </span>
-                <!-- Load images without lazy loading -->
                 <img width="50" src="@(!string.IsNullOrEmpty(card.OriginalImageUrl) ? card.OriginalImageUrl : "images/placeholder.png")" alt="@card.Name" />
             </li>
         }
@@ -156,19 +142,36 @@
     private int totalPages;
     private int pageSize = 10; // Number of cards per page
 
+    private bool isDataLoaded = false;
+
     protected override async Task OnInitializedAsync()
     {
         // Load all cards initially
-        myCards = Services.GetAllCards();
+        myCards = services.GetAllCards();
         filteredCards = myCards;
-        await LoadBookmarkedItemsAsync();
         UpdatePagedCards();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Load bookmarked items after the first render
+            await LoadBookmarkedItemsAsync();
+            UpdatePagedCards();
+            isDataLoaded = true;
+            StateHasChanged(); // Re-render the component after loading bookmarked items
+        }
+    }
 
-
-
-
+    private async Task LoadBookmarkedItemsAsync()
+    {
+        var result = await sessionStorage.GetAsync<List<long>>("bookmarkedItems");
+        if (result.Success)
+        {
+            bookmarkedItems = result.Value ?? new List<long>();
+        }
+    }
 
     private void FilterResults()
     {
@@ -178,25 +181,12 @@
             (string.IsNullOrEmpty(FilterParameters.ManaCostFilter) ||
                 (!string.IsNullOrEmpty(card.ManaCost) && card.ManaCost.Contains(FilterParameters.ManaCostFilter))) &&
             (string.IsNullOrEmpty(FilterParameters.TypeFilter) ||
-                (card.Type != null && card.Type.Split(", ").Contains(FilterParameters.TypeFilter))) &&  // Adjusted for type matching
+                (card.Type != null && card.Type.Split(", ").Contains(FilterParameters.TypeFilter))) &&
             (string.IsNullOrEmpty(searchQuery) || (card.Name != null && card.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
         ).ToList();
 
         UpdatePagedCards();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private void ResetFilter()
     {
@@ -205,12 +195,18 @@
         UpdatePagedCards();
     }
 
-    private async Task LoadBookmarkedItemsAsync()
+    private void UpdatePagedCards()
     {
-        var result = await sessionStorage.GetAsync<List<long>>("bookmarkedItems");
-        if (result.Success)
+        totalPages = (int)Math.Ceiling(filteredCards.Count / (double)pageSize);
+        pagedCards = filteredCards.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+    }
+
+    private void OnPageChanged(int newPage)
+    {
+        if (newPage >= 1 && newPage <= totalPages)
         {
-            bookmarkedItems = result.Value ?? new List<long>();
+            currentPage = newPage;
+            UpdatePagedCards();
         }
     }
 
@@ -230,21 +226,6 @@
     private string GetBookmarkIconClass(long id)
     {
         return bookmarkedItems.Contains(id) ? "fas fa-heart" : "far fa-heart";
-    }
-
-    private void UpdatePagedCards()
-    {
-        totalPages = (int)Math.Ceiling(filteredCards.Count / (double)pageSize);
-        pagedCards = filteredCards.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
-    }
-
-    private void OnPageChanged(int newPage)
-    {
-        if (newPage >= 1 && newPage <= totalPages)
-        {
-            currentPage = newPage;
-            UpdatePagedCards();
-        }
     }
 
     private bool IsPreviousDisabled => currentPage <= 1;
